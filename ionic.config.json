@@ -1,0 +1,7 @@
+{
+  "name": "IonicVideosAppMorenoGerard",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
