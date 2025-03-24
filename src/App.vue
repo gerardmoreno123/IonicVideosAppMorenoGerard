@@ -3,23 +3,47 @@
     <ion-split-pane content-id="main-content">
       <ion-menu content-id="main-content" type="overlay">
         <ion-content>
+          <!-- Secció d'informació de l'usuari -->
           <ion-list id="info-list" v-if="isLoggedIn">
-            <ion-list-header>Inbox</ion-list-header>
-            <ion-note>hi@ionicframework.com</ion-note>
+            <ion-list-header>Benvingut</ion-list-header>
+            <div class="user-info">
+              <img :src="user.profile_photo_url" alt="Foto de perfil" class="profile-photo" />
+              <div class="user-details">
+                <ion-label>{{ user.name }}</ion-label>
+                <ion-note>{{ user.email }}</ion-note>
+              </div>
+            </div>
           </ion-list>
+          <!-- Pàgines generals -->
           <ion-list id="general-pages">
             <ion-list-header><h1>General</h1></ion-list-header>
             <ion-menu-toggle :auto-hide="false" v-for="p in appPages" :key="p.url">
-              <ion-item router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: $route.path === p.url }">
+              <ion-item
+                  router-direction="root"
+                  :router-link="p.url"
+                  lines="none"
+                  :detail="false"
+                  class="hydrated"
+                  :class="{ selected: $route.path === p.url }"
+              >
                 <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
+          <!-- Pàgines d'autenticació -->
           <ion-list id="auth-pages">
             <ion-list-header><h1>Compte</h1></ion-list-header>
             <ion-menu-toggle :auto-hide="false" v-for="p in currentAuthPages" :key="p.url">
-              <ion-item router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: $route.path === p.url }" @click="p.action ? p.action() : null">
+              <ion-item
+                  router-direction="root"
+                  :router-link="p.url"
+                  lines="none"
+                  :detail="false"
+                  class="hydrated"
+                  :class="{ selected: $route.path === p.url }"
+                  @click="p.action ? p.action() : null"
+              >
                 <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
@@ -47,7 +71,7 @@ import {
   IonRouterOutlet,
   IonSplitPane,
 } from '@ionic/vue';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   homeOutline,
@@ -61,10 +85,34 @@ import {
   logOutOutline,
   logOutSharp,
 } from 'ionicons/icons';
-import { useAuth } from '@/stores/auth'; // Importem l'estat compartit
+import { useAuth } from '@/stores/auth';
+import api from '@/services/api';
 
 const router = useRouter();
-const { isLoggedIn, logout } = useAuth(); // Desestructurem l'estat i la funció logout
+const { isLoggedIn, logout } = useAuth();
+
+// Dades de l'usuari
+const user = ref({
+  name: '',
+  email: '',
+  profile_photo_url: 'https://via.placeholder.com/50', // Placeholder inicial
+});
+
+const fetchUserProfile = async () => {
+  if (isLoggedIn.value) {
+    try {
+      const response = await api.get('/profile');
+      user.value = response.data.data; // Assumeix que l'API retorna { data: { name, email, profile_photo_url, ... } }
+      console.log('Usuari carregat:', user.value);
+    } catch (error) {
+      console.error('Error carregant el perfil:', error);
+    }
+  }
+};
+
+onMounted(() => {
+  fetchUserProfile();
+});
 
 function logout_action() {
   return () => {
@@ -86,7 +134,7 @@ const loggedInPages = [
 const currentAuthPages = computed(() => (isLoggedIn.value ? loggedInPages : notLoggedInPages));
 
 const appPages = [
-  { title: 'Home', url: '/home', iosIcon: homeOutline, mdIcon: homeSharp },
+  { title: 'Videos', url: '/', iosIcon: homeOutline, mdIcon: homeSharp },
 ];
 </script>
 
@@ -111,26 +159,52 @@ ion-menu.md ion-list#auth-pages {
   border-bottom: none;
 }
 
-ion-menu.md ion-note {
-  margin-bottom: 30px;
-  padding-left: 10px;
-  display: inline-block;
+ion-menu.md ion-list#info-list {
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+}
+
+.profile-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.user-info:hover .profile-photo {
+  transform: scale(1.1);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-details ion-label {
   font-size: 16px;
+  font-weight: 500;
+  color: var(--ion-text-color);
+}
+
+.user-details ion-note {
+  font-size: 14px;
   color: var(--ion-color-medium-shade);
 }
 
 ion-menu.md ion-list-header {
   padding-left: 10px;
-}
-
-ion-menu.md ion-list#info-list ion-list-header {
-  font-size: 22px;
-  font-weight: 600;
-  min-height: 20px;
-}
-
-ion-menu.md ion-list#general-pages ion-list-header,
-ion-menu.md ion-list#auth-pages ion-list-header {
   font-size: 22px;
   font-weight: 600;
   min-height: 20px;
@@ -169,15 +243,6 @@ ion-menu.ios ion-list {
 
 ion-menu.ios ion-list#auth-pages {
   border-bottom: none;
-}
-
-ion-menu.ios ion-note {
-  line-height: 24px;
-  margin-bottom: 20px;
-  padding-left: 16px;
-  padding-right: 16px;
-  font-size: 16px;
-  color: var(--ion-color-medium-shade);
 }
 
 ion-menu.ios ion-item {

@@ -5,10 +5,6 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/home'
-  },
-  {
-    path: '/home',
     component: () => import('@/views/HomePage.vue')
   },
   {
@@ -18,6 +14,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/auth/login',
     component: () => import ('@/views/LoginPage.vue')
+  },
+  {
+    path: '/video/:id',
+    component: () => import('@/views/VideoPage.vue')
+  },
+  {
+    path: '/profile',
+    component: () => import('@/views/ProfilePage.vue')
   }
 ]
 
