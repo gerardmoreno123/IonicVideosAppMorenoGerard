@@ -12,28 +12,28 @@
       <div class="form-container">
         <ion-item class="form-item" :class="{ 'invalid': nameError }">
           <ion-icon :icon="person" slot="start"></ion-icon>
-          <ion-label position="floating">Nom</ion-label>
+          <ion-label class="form-item-title" position="floating">Nom</ion-label>
           <ion-input v-model="name" @input="validateName" required></ion-input>
         </ion-item>
         <div v-if="nameError" class="error-message">El nom ha de tenir almenys 2 caràcters.</div>
 
         <ion-item class="form-item" :class="{ 'invalid': emailError }">
           <ion-icon :icon="mail" slot="start"></ion-icon>
-          <ion-label position="floating">Email</ion-label>
+          <ion-label class="form-item-title" position="floating">Email</ion-label>
           <ion-input v-model="email" type="email" @input="validateEmail" required></ion-input>
         </ion-item>
         <div v-if="emailError" class="error-message">Introdueix un email vàlid.</div>
 
         <ion-item class="form-item" :class="{ 'invalid': passwordError }">
           <ion-icon :icon="lockClosed" slot="start"></ion-icon>
-          <ion-label position="floating">Contrasenya</ion-label>
+          <ion-label class="form-item-title" position="floating">Contrasenya</ion-label>
           <ion-input v-model="password" type="password" @input="validatePassword" required></ion-input>
         </ion-item>
         <div v-if="passwordError" class="error-message">La contrasenya ha de tenir almenys 6 caràcters.</div>
 
         <ion-item class="form-item" :class="{ 'invalid': passwordConfirmError }">
           <ion-icon :icon="lockClosed" slot="start"></ion-icon>
-          <ion-label position="floating">Confirmar Contrasenya</ion-label>
+          <ion-label class="form-item-title" position="floating">Confirmar Contrasenya</ion-label>
           <ion-input v-model="password_confirmation" type="password" @input="validatePasswordConfirm" required></ion-input>
         </ion-item>
         <div v-if="passwordConfirmError" class="error-message">Les contrasenyes no coincideixen.</div>
@@ -139,6 +139,10 @@ const register = async () => {
   transition: border 0.3s ease;
 }
 
+.form-item-title {
+  margin-bottom: 12px;
+}
+
 .form-item.invalid {
   --border-color: var(--ion-color-danger);
   --border-width: 2px;
@@ -191,5 +195,6 @@ ion-icon {
   color: var(--ion-color-primary);
   font-size: 20px;
   margin-right: 10px;
+  padding-top: 3px;
 }
 </style>
