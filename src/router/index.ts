@@ -22,6 +22,34 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/profile',
     component: () => import('@/views/ProfilePage.vue')
+  },
+  {
+    path: '/videos/manage',
+    component: () => import('@/views/VideosManagerCRUD/Index.vue')
+  },
+  {
+    path: '/videos/manage/show/:id',
+    component: () => import('@/views/VideosManagerCRUD/Show.vue')
+  },
+  {
+    path: '/videos/manage/create',
+    component: () => import('@/views/VideosManagerCRUD/Create.vue')
+  },
+  {
+    path: '/videos/manage/edit/:id',
+    component: () => import('@/views/VideosManagerCRUD/Edit.vue')
+  },
+  {
+    path: '/videos/manage/delete/:id',
+    component: () => import('@/views/VideosManagerCRUD/Delete.vue')
+  },
+  {
+    path: '/multimedia/manage',
+    component: () => import('@/views/MultimediaManagerCRUD/Index.vue')
+  },
+  {
+    path: '/multimedia/manage/create',
+    component: () => import('@/views/MultimediaManagerCRUD/Create.vue')
   }
 ]
 

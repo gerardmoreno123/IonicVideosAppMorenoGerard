@@ -76,7 +76,7 @@ import {
   IonMenuToggle,
   IonNote,
   IonRouterOutlet,
-  IonSplitPane,
+  IonSplitPane, toastController,
 } from '@ionic/vue';
 import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -109,10 +109,15 @@ const fetchUserProfile = async () => {
   if (isLoggedIn.value) {
     try {
       const response = await api.get('/profile');
-      user.value = response.data.data; // Assumeix que l'API retorna { data: { name, email, profile_photo_url, ... } }
-      console.log('Usuari carregat:', user.value);
+      user.value = response.data.data;
     } catch (error) {
       console.error('Error carregant el perfil:', error);
+      const toast = await toastController.create({
+        message: `Error carregant el perfil: ${error.response?.data?.message || 'Desconegut'}`,
+        duration: 2000,
+        color: 'danger',
+      });
+      await toast.present();
     }
   }
 };

@@ -20,6 +20,7 @@
           <h1>{{ user.name }}</h1>
           <p class="email">{{ user.email }}</p>
         </div>
+
         <!-- Secció dels vídeos -->
         <div class="videos-section">
           <h2>Els meus vídeos</h2>
@@ -58,7 +59,6 @@ import {
   IonHeader,
   IonToolbar,
   IonButtons,
-  IonBackButton,
   IonTitle,
   IonContent,
   IonSpinner,
