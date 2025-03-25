@@ -172,7 +172,7 @@ const currentAuthPages = computed(() => (isLoggedIn.value ? loggedInPages : notL
 const currentCrudPages = computed(() => (isLoggedIn.value ? crudPages : []));
 
 const appPages = [
-  { title: 'Videos', url: '/', iosIcon: homeOutline, mdIcon: homeSharp },
+  { title: 'Explora', url: '/', iosIcon: homeOutline, mdIcon: homeSharp },
 ];
 </script>
 

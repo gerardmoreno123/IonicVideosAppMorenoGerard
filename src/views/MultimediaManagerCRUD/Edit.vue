@@ -16,7 +16,6 @@
             <ion-label position="floating">Títol</ion-label>
             <ion-input v-model="multimedia.title" placeholder="Introdueix el títol"></ion-input>
           </ion-item>
-          <div v-if="titleError" class="error-message">El títol és obligatori.</div>
 
           <ion-item>
             <ion-icon :icon="chatbubbleEllipses" slot="start"></ion-icon>
@@ -36,6 +35,7 @@
                 accepted-file-types="video/mp4,video/mpeg,video/avi,video/mov,video/webm,video/mkv,image/jpeg,image/png,image/jpg"
                 instant-upload="false"
                 v-bind:files="myFiles"
+                :server="filePondServer"
             />
           </div>
           <ion-button expand="block" color="success" @click="updateMultimedia">Actualitzar</ion-button>
@@ -86,10 +86,33 @@ const multimedia = ref({
   description: '',
 });
 const myFiles = ref([]);
-const titleError = ref(false);
 
-const validateTitle = () => {
-  titleError.value = !multimedia.value.title.trim();
+const filePondServer = {
+  load: async (source, load, error, progress) => {
+    try {
+      const response = await fetch(source, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+        },
+      });
+      if (!response.ok) throw new Error('No es pot carregar el fitxer');
+
+      const blob = await response.blob();
+      const contentType = response.headers.get('Content-Type') || 'application/octet-stream';
+      const fileName = source.split('/').pop() || 'file'; // Extreu el nom del fitxer de la URL
+
+      console.log('Blob size:', blob.size); // Depura la mida del Blob
+      console.log('Content-Type:', contentType); // Depura el tipus MIME
+
+      // Crea un fitxer amb el nom i tipus correctes
+      const file = new File([blob], fileName, { type: contentType });
+      load(file); // Passa el fitxer complet amb metadades
+    } catch (err) {
+      console.error('Error carregant el fitxer:', err);
+      error(err.message);
+    }
+  },
 };
 
 const fetchMultimedia = async () => {
@@ -111,23 +134,29 @@ const fetchMultimedia = async () => {
 };
 
 const updateMultimedia = async () => {
-  validateTitle();
-  if (titleError.value) {
-    console.error('El títol és obligatori');
-    return;
-  }
-
   const formData = new FormData();
   formData.append('title', multimedia.value.title);
   formData.append('description', multimedia.value.description || '');
-  const files = pond.value.getFiles();
-  if (files.length && files[0].file) {  // Check if a new file is selected
-    formData.append('file', files[0].file);
-  }
   formData.append('_method', 'PUT');
 
+  const files = pond.value.getFiles();
+  if (files.length) {
+    const file = files[0].file;
+    // Comprova si el fitxer és nou (no prové de 'local')
+    if (files[0].source !== myFiles.value[0]?.source) {
+      console.log('Enviant fitxer nou:', file.name, file.type, file.size);
+      formData.append('file', file, file.name);
+    } else {
+      console.log('No s\'ha canviat el fitxer, no s\'envia.');
+    }
+  }
+
   try {
-    await api.post(`/multimedia/manage/update/${route.params.id}`, formData);
+    await api.post(`/multimedia/manage/update/${route.params.id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     await router.push('/multimedia/manage');
   } catch (error) {
     console.error('Error actualitzant multimèdia:', error.response?.data || error.message);
