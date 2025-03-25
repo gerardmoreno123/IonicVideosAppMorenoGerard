@@ -3,9 +3,9 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button default-href="/videos/manage"></ion-back-button>
+          <ion-back-button default-href="/multimedia/manage"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ video.title }}</ion-title>
+        <ion-title>{{ arxiu.title }}</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
@@ -13,36 +13,37 @@
         <ion-card-content>
           <ion-item lines="none">
             <ion-label>
-              <h2>Títol: {{ video.title }}</h2>
+              <h2>Títol: {{ arxiu.title }}</h2>
             </ion-label>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
-              <p>Publicat el: {{ formatDate(video.published_at) }}</p>
+              <h3>Publicat el</h3>
+              <p>{{ formatDate(arxiu.published_at) }}</p>
             </ion-label>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
-              <p>Publicat per: {{ video.user?.name || 'Unknow' }}</p>
+              <p>Publicat per: {{ arxiu.user?.name || 'Unknow' }}</p>
             </ion-label>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
               <h3>Descripció</h3>
-              <p>{{ video.description || 'Sense descripció' }}</p>
+              <p>{{ arxiu.description || 'Sense descripció' }}</p>
             </ion-label>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
-              <h3>URL</h3>
-              <p>{{ video.url }}</p>
+              <h3>Ruta del fitxer</h3>
+              <p>{{ arxiu.file_path }}</p>
             </ion-label>
           </ion-item>
           <ion-item lines="none">
             <ion-label>
               <h3>URL APP</h3>
-              <ion-button color="primary" @click="router.push(`/video/${video.id}`)" expand="block" target="_blank">
-                Veure vídeo
+              <ion-button color="primary" @click="router.push(`/multimedia/${arxiu.id}`)" expand="block" target="_blank">
+                Veure arxiu multimedia
               </ion-button>
             </ion-label>
           </ion-item>
@@ -73,13 +74,13 @@ import {
 
 const router = useRouter();
 const route = useRoute();
-const video = ref({});
+const arxiu = ref({});
 
 const fetchVideo = async () => {
   try {
-    const response = await api.get(`/videos/manage/show/${route.params.id}`);
+    const response = await api.get(`/multimedia/manage/show/${route.params.id}`);
     console.log(response.data.data);
-    video.value = response.data.data;
+    arxiu.value = response.data.data;
   } catch (error) {
     console.error('Error carregant vídeo:', error);
   }

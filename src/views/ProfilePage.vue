@@ -21,29 +21,77 @@
           <p class="email">{{ user.email }}</p>
         </div>
 
-        <!-- Secció dels vídeos -->
-        <div class="videos-section">
-          <h2>Els meus vídeos</h2>
-          <div v-if="user.videos.length > 0" class="videos-list">
-            <div
-                v-for="(video, index) in user.videos"
-                :key="video.id"
-                class="video-card"
-                :style="{ animationDelay: `${index * 0.1}s` }"
-                @click="$router.push(`/video/${video.id}`)"
-            >
-              <div class="video-thumbnail">
-                <img :src="getThumbnailUrl(video.url)" alt="Video thumbnail" class="thumbnail-image" />
-                <ion-icon :icon="playCircle" class="play-icon"></ion-icon>
-              </div>
-              <div class="video-info">
-                <h3>{{ video.title }}</h3>
-                <p class="description">{{ video.description }}</p>
-                <p class="published-at">{{ formatDate(video.published_at) }}</p>
+        <!-- Secció de tabs -->
+        <div class="media-section">
+          <ion-segment v-model="activeTab" class="media-tabs">
+            <ion-segment-button value="videos">
+              <ion-label>Vídeos</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="multimedia">
+              <ion-label>Multimèdia</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <!-- Contingut dels vídeos -->
+          <div v-if="activeTab === 'videos'" class="tab-content">
+            <h2>Els meus vídeos</h2>
+            <div v-if="user.videos.length > 0" class="videos-list">
+              <div
+                  v-for="(video, index) in user.videos"
+                  :key="video.id"
+                  class="video-card"
+                  :style="{ animationDelay: `${index * 0.1}s` }"
+                  @click="$router.push(`/video/${video.id}`)"
+              >
+                <div class="video-thumbnail">
+                  <img :src="getThumbnailUrl(video.url)" alt="Video thumbnail" class="thumbnail-image" />
+                  <ion-icon :icon="playCircle" class="play-icon"></ion-icon>
+                </div>
+                <div class="video-info">
+                  <h3>{{ video.title }}</h3>
+                  <p class="description">{{ video.description }}</p>
+                  <p class="published-at">{{ formatDate(video.published_at) }}</p>
+                </div>
               </div>
             </div>
+            <p v-else class="no-content">Encara no tens vídeos.</p>
           </div>
-          <p v-else class="no-videos">Encara no tens vídeos.</p>
+
+          <!-- Contingut dels multimèdia -->
+          <div v-if="activeTab === 'multimedia'" class="tab-content">
+            <h2>Els meus arxius multimèdia</h2>
+            <div v-if="user.multimedia.length > 0" class="multimedia-list">
+              <div
+                  v-for="(item, index) in user.multimedia"
+                  :key="item.id"
+                  class="multimedia-card"
+                  :style="{ animationDelay: `${index * 0.1}s` }"
+                  @click="$router.push(`/multimedia/manage/show/${item.id}`)"
+              >
+                <div class="multimedia-thumbnail">
+                  <img
+                      v-if="item.file_type === 'image'"
+                      :src="getMultimediaUrl(item.file_path)"
+                      :alt="item.title"
+                      class="thumbnail-image"
+                  />
+                  <video
+                      v-else-if="item.file_type === 'video'"
+                      :src="getMultimediaUrl(item.file_path)"
+                      class="thumbnail-video"
+                      muted
+                  ></video>
+                  <ion-icon :icon="playCircle" v-if="item.file_type === 'video'" class="play-icon"></ion-icon>
+                </div>
+                <div class="multimedia-info">
+                  <h3>{{ item.title }}</h3>
+                  <p class="description">{{ item.description }}</p>
+                  <p class="published-at">{{ formatDate(item.published_at) }}</p>
+                </div>
+              </div>
+            </div>
+            <p v-else class="no-content">Encara no tens arxius multimèdia.</p>
+          </div>
         </div>
       </div>
       <div v-else class="error">
@@ -63,7 +111,11 @@ import {
   IonContent,
   IonSpinner,
   IonIcon,
-  IonMenuButton, toastController
+  IonMenuButton,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  toastController,
 } from '@ionic/vue';
 import { playCircle } from 'ionicons/icons';
 import api from '@/services/api';
@@ -73,11 +125,12 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const user = ref(null);
 const loading = ref(true);
+const activeTab = ref('videos'); // Tab actiu per defecte
 
 const fetchProfile = async () => {
   try {
     const response = await api.get('/profile');
-    user.value = response.data.data; // Accedim a 'data' de la resposta
+    user.value = response.data.data;
   } catch (error) {
     console.error('Error carregant el perfil:', error);
     const toast = await toastController.create({
@@ -98,7 +151,12 @@ const formatDate = (dateString: string) => {
 
 const getThumbnailUrl = (url: string) => {
   const videoId = url.split('/embed/')[1]?.split('?')[0];
-  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://via.placeholder.com/480x360';
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+};
+
+const getMultimediaUrl = (filePath: string) => {
+  const baseUrl = 'http://localhost:8000';
+  return `${baseUrl}/storage/${filePath}`;
 };
 
 onMounted(() => {
@@ -154,22 +212,29 @@ onMounted(() => {
   color: var(--ion-color-medium);
 }
 
-.videos-section {
+.media-section {
   padding: 20px;
   background: var(--ion-background-color-step-50);
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.videos-section h2 {
+.media-tabs {
+  margin-bottom: 20px;
+}
+
+.tab-content h2 {
   margin: 0 0 20px;
   font-size: 1.5rem;
   color: var(--ion-text-color);
 }
 
-.video-card {
-  max-width: 100%;
-  margin-bottom: 20px;
+.videos-list, .multimedia-list {
+  display: grid;
+  gap: 20px;
+}
+
+.video-card, .multimedia-card {
   background: var(--ion-background-color-step-100);
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -179,17 +244,17 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.video-card:hover {
+.video-card:hover, .multimedia-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.video-thumbnail {
+.video-thumbnail, .multimedia-thumbnail {
   position: relative;
-  padding-top: 56.25%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
 }
 
-.thumbnail-image {
+.thumbnail-image, .thumbnail-video {
   position: absolute;
   top: 0;
   left: 0;
@@ -199,7 +264,8 @@ onMounted(() => {
   transition: opacity 0.3s ease;
 }
 
-.video-card:hover .thumbnail-image {
+.video-card:hover .thumbnail-image, .multimedia-card:hover .thumbnail-image,
+.video-card:hover .thumbnail-video, .multimedia-card:hover .thumbnail-video {
   opacity: 0.8;
 }
 
@@ -215,16 +281,16 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-.video-card:hover .play-icon {
+.video-card:hover .play-icon, .multimedia-card:hover .play-icon {
   transform: translate(-50%, -50%) scale(1.1);
   opacity: 1;
 }
 
-.video-info {
+.video-info, .multimedia-info {
   padding: 15px;
 }
 
-.video-info h3 {
+.video-info h3, .multimedia-info h3 {
   margin: 0 0 5px;
   font-size: 1.1rem;
   color: var(--ion-text-color);
@@ -232,7 +298,7 @@ onMounted(() => {
   transition: color 0.3s ease;
 }
 
-.video-card:hover .video-info h3 {
+.video-card:hover .video-info h3, .multimedia-card:hover .multimedia-info h3 {
   color: var(--ion-color-primary);
 }
 
@@ -250,7 +316,7 @@ onMounted(() => {
   font-style: italic;
 }
 
-.no-videos {
+.no-content {
   text-align: center;
   font-size: 1rem;
   color: var(--ion-color-medium);

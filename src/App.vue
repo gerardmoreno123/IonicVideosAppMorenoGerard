@@ -31,6 +31,25 @@
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
+
+          <!-- Pàgines CRUD -->
+          <ion-list id="crud-pages">
+            <ion-list-header><h1>CRUD</h1></ion-list-header>
+            <ion-menu-toggle :auto-hide="false" v-for="p in currentCrudPages" :key="p.url">
+              <ion-item
+                  router-direction="root"
+                  :router-link="p.url"
+                  lines="none"
+                  :detail="false"
+                  class="hydrated"
+                  :class="{ selected: $route.path === p.url }"
+              >
+                <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+
           <!-- Pàgines d'autenticació -->
           <ion-list id="auth-pages">
             <ion-list-header><h1>Compte</h1></ion-list-header>
@@ -49,6 +68,7 @@
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
+
           <div class="sidebar-footer">
             <ion-note>© {{ new Date().getFullYear() }} Gerard Moreno Campos</ion-note>
             <ion-item lines="none" href="https://github.com/gerardmoreno123" target="_blank">
@@ -90,7 +110,7 @@ import {
   personOutline,
   personSharp,
   logOutOutline,
-  logOutSharp, logoGithub,
+  logOutSharp, logoGithub, videocamSharp, fileTrayFullSharp,
 } from 'ionicons/icons';
 import { useAuth } from '@/stores/auth';
 import api from '@/services/api';
@@ -143,7 +163,13 @@ const loggedInPages = [
   { title: 'Logout', url: '', iosIcon: logOutOutline, mdIcon: logOutSharp, action: logout_action() },
 ];
 
+const crudPages = [
+  { title: 'Videos Manager', url: '/videos/manage', iosIcon: videocamSharp, mdIcon: videocamSharp },
+  { title: 'Multimedia Manager', url: '/multimedia/manage', iosIcon: fileTrayFullSharp, mdIcon: fileTrayFullSharp },
+];
+
 const currentAuthPages = computed(() => (isLoggedIn.value ? loggedInPages : notLoggedInPages));
+const currentCrudPages = computed(() => (isLoggedIn.value ? crudPages : []));
 
 const appPages = [
   { title: 'Videos', url: '/', iosIcon: homeOutline, mdIcon: homeSharp },
@@ -256,10 +282,6 @@ ion-menu.ios ion-content {
 ion-menu.ios ion-list {
   padding: 20px 0 0 0;
   border-bottom: 1px solid var(--ion-background-color-step-150, #d7d8da);
-}
-
-ion-menu.ios ion-list#auth-pages {
-  border-bottom: none;
 }
 
 ion-menu.ios ion-item {

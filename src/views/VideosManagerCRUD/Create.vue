@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api';
 import {
@@ -66,10 +66,19 @@ const video = ref({
 const createVideo = async () => {
   try {
     await api.post('/videos/manage/create', video.value);
+    resetForm();
     await router.push('/videos/manage');
   } catch (error) {
     console.error('Error creant vídeo:', error);
   }
+};
+
+const resetForm = () => {
+  video.value = {
+    title: '',
+    url: '',
+    description: '',
+  };
 };
 </script>
 

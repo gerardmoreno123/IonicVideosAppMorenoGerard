@@ -20,6 +20,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/VideoPage.vue')
   },
   {
+    path: '/multimedia/:id',
+    component: () => import('@/views/MultimediaPage.vue')
+  },
+  {
     path: '/profile',
     component: () => import('@/views/ProfilePage.vue')
   },
@@ -48,8 +52,20 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/MultimediaManagerCRUD/Index.vue')
   },
   {
+    path: '/multimedia/manage/show/:id',
+    component: () => import('@/views/MultimediaManagerCRUD/Show.vue')
+  },
+  {
     path: '/multimedia/manage/create',
     component: () => import('@/views/MultimediaManagerCRUD/Create.vue')
+  },
+  {
+    path: '/multimedia/manage/edit/:id',
+    component: () => import('@/views/MultimediaManagerCRUD/Edit.vue')
+  },
+  {
+    path: '/multimedia/manage/delete/:id',
+    component: () => import('@/views/MultimediaManagerCRUD/Delete.vue')
   }
 ]
 
