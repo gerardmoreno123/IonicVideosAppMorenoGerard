@@ -9,11 +9,11 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/auth/register',
-    component: () => import ('@/views/RegisterPage.vue')
+    component: () => import ('@/views/AuthPages/RegisterPage.vue')
   },
   {
     path: '/auth/login',
-    component: () => import ('@/views/LoginPage.vue')
+    component: () => import ('@/views/AuthPages/LoginPage.vue')
   },
   {
     path: '/video/:id',

@@ -49,6 +49,13 @@
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
+          <div class="sidebar-footer">
+            <ion-note>© {{ new Date().getFullYear() }} Gerard Moreno Campos</ion-note>
+            <ion-item lines="none" href="https://github.com/gerardmoreno123" target="_blank">
+              <ion-icon slot="start" :icon="logoGithub"></ion-icon>
+              <ion-label>GitHub</ion-label>
+            </ion-item>
+          </div>
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -83,7 +90,7 @@ import {
   personOutline,
   personSharp,
   logOutOutline,
-  logOutSharp,
+  logOutSharp, logoGithub,
 } from 'ionicons/icons';
 import { useAuth } from '@/stores/auth';
 import api from '@/services/api';
@@ -139,7 +146,12 @@ const appPages = [
 </script>
 
 <style scoped>
+
 ion-menu ion-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
 
@@ -267,5 +279,33 @@ ion-menu.ios ion-list-header {
 
 ion-item.selected {
   --color: var(--ion-color-primary);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 10px;
+  border-top: 1px solid var(--ion-background-color-step-150, #d7d8da);
+}
+
+.sidebar-footer ion-note {
+  font-size: 12px;
+  color: var(--ion-color-medium-shade);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.sidebar-footer ion-item {
+  --padding-start: 0;
+  --padding-end: 0;
+  --color: var(--ion-color-medium);
+}
+
+.sidebar-footer ion-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.sidebar-footer ion-label {
+  font-size: 14px;
 }
 </style>
