@@ -76,7 +76,7 @@ const login = async () => {
       color: 'success',
     });
     await toast.present();
-    router.push('/home');
+    await router.push('/');
   } catch (error) {
     const toast = await toastController.create({
       message: `Error en les credencials: ${error.response?.data?.message || 'Desconegut'}`,

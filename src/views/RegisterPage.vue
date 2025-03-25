@@ -107,7 +107,7 @@ const register = async () => {
       color: 'success',
     });
     await toast.present();
-    router.push('/home');
+    await router.push('/');
   } catch (error) {
     const toast = await toastController.create({
       message: `Error en el registre: ${error.response?.data?.message || 'Desconegut'}`,

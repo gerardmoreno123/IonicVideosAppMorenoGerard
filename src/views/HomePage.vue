@@ -21,7 +21,7 @@
             :key="video.id"
             class="video-card"
             :style="{ animationDelay: `${index * 0.1}s` }"
-            @click="$router.push(`/video/${video.id}`)"
+            @click="router.push(`/video/${video.id}`)"
         >
           <div class="video-thumbnail">
             <img :src="getThumbnailUrl(video.url)" alt="Video thumbnail" class="thumbnail-image" />
@@ -39,7 +39,18 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonSpinner, IonIcon } from '@ionic/vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonMenuButton,
+  IonTitle,
+  IonContent,
+  IonSpinner,
+  IonIcon,
+  toastController
+} from '@ionic/vue';
 import { playCircle } from 'ionicons/icons';
 import api from '@/services/api';
 import { ref, onMounted } from 'vue';
@@ -57,6 +68,12 @@ const fetchVideos = async () => {
     console.log('Primer vídeo carregat:', videos.value[0]);
   } catch (error) {
     console.error('Error carregant els vídeos:', error);
+    const toast = await toastController.create({
+      message: `Error carregant els vídeos: ${error.response?.data?.message || 'Desconegut'}`,
+      duration: 2000,
+      color: 'danger',
+    });
+    await toast.present();
   } finally {
     loading.value = false;
   }

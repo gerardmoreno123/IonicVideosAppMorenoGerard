@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button default-href="/"></ion-back-button>
+          <ion-menu-button color="primary"></ion-menu-button>
         </ion-buttons>
         <ion-title>Perfil</ion-title>
       </ion-toolbar>
@@ -53,7 +53,18 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonSpinner, IonIcon } from '@ionic/vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
+  IonTitle,
+  IonContent,
+  IonSpinner,
+  IonIcon,
+  IonMenuButton, toastController
+} from '@ionic/vue';
 import { playCircle } from 'ionicons/icons';
 import api from '@/services/api';
 import { ref, onMounted } from 'vue';
@@ -67,9 +78,14 @@ const fetchProfile = async () => {
   try {
     const response = await api.get('/profile');
     user.value = response.data.data; // Accedim a 'data' de la resposta
-    console.log('Perfil carregat:', user.value);
   } catch (error) {
     console.error('Error carregant el perfil:', error);
+    const toast = await toastController.create({
+      message: `Error carregant el perfil: ${error.response?.data?.message || 'Desconegut'}`,
+      duration: 2000,
+      color: 'danger',
+    });
+    await toast.present();
   } finally {
     loading.value = false;
   }

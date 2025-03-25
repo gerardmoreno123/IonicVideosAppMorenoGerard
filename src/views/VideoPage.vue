@@ -34,23 +34,36 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonTitle, IonContent } from '@ionic/vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
+  IonTitle,
+  IonContent,
+  IonSpinner,
+  toastController
+} from '@ionic/vue';
 import api from '@/services/api';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const id = route.params.id;
-
 const video = ref(null);
 
 const fetchVideo = async () => {
   try {
-    const response = await api.get(`/videos/${id}`);
+    const response = await api.get(`/videos/${route.params.id}`);
     video.value = response.data.data;
-    console.log('Primer vídeo carregat:', video.value[0]);
   } catch (error) {
-    console.error('Error carregant els vídeos:', error);
+    console.error('Error carregant el vídeo:', error);
+    const toast = await toastController.create({
+      message: `Error carregant el video: ${error.response?.data?.message || 'Desconegut'}`,
+      duration: 2000,
+      color: 'danger',
+    });
+    await toast.present();
   }
 };
 
