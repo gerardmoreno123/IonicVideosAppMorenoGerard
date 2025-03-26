@@ -13,7 +13,6 @@
         <div class="video-player">
           <iframe
               :src="`${video.url}?autoplay=1`"
-              frameborder="0"
               allowfullscreen
               title="YouTube video player"
               class="video-iframe"
@@ -46,20 +45,30 @@ import {
   toastController
 } from '@ionic/vue';
 import api from '@/services/api';
+import { AxiosError} from "axios";
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
+interface Video {
+  id: number;
+  title: string;
+  description: string;
+  url: string;
+  published_at: string;
+}
+
 const route = useRoute();
-const video = ref(null);
+const video = ref<Video | null>(null);
 
 const fetchVideo = async () => {
   try {
     const response = await api.get(`/videos/${route.params.id}`);
     video.value = response.data.data;
   } catch (error) {
-    console.error('Error carregant el vídeo:', error);
+    const axiosError = error as AxiosError;
+    console.error('Error carregant el vídeo:', axiosError);
     const toast = await toastController.create({
-      message: `Error carregant el video: ${error.response?.data?.message || 'Desconegut'}`,
+      message: `Error carregant el video: ${axiosError.message || 'Desconegut'}`,
       duration: 2000,
       color: 'danger',
     });
@@ -96,9 +105,7 @@ onMounted(() => {
   position: relative;
   padding-top: 56.25%; /* Proporció 16:9 */
   margin-bottom: 20px;
-  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .video-iframe {
@@ -116,14 +123,14 @@ onMounted(() => {
 
 .video-details {
   padding: 20px;
-  background: var(--ion-color-step-100);
+  background: var(--ion-background-color-step-100);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: background 0.3s ease;
 }
 
 .video-container:hover .video-details {
-  background: var(--ion-color-step-150); /* Fons més clar al hover */
+  background: var(--ion-background-color-step-150); /* Fons més clar al hover */
 }
 
 .video-details h1 {

@@ -35,6 +35,7 @@
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonIcon } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api';
+import { AxiosError } from "axios";
 import { ref, computed } from 'vue';
 import { useAuth } from '@/stores/auth';
 import { toastController } from '@ionic/vue';
@@ -49,7 +50,6 @@ const passwordError = ref(false);
 const router = useRouter();
 const { login: authLogin } = useAuth();
 
-// Validaciones en tiempo real
 const validateEmail = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   emailError.value = !emailRegex.test(email.value);
@@ -58,7 +58,6 @@ const validatePassword = () => {
   passwordError.value = password.value.length < 6;
 };
 
-// Estado del formulario
 const formInvalid = computed(() => {
   return emailError.value || passwordError.value || !email.value || !password.value;
 });
@@ -78,8 +77,9 @@ const login = async () => {
     await toast.present();
     await router.push('/');
   } catch (error) {
+    const axiosError = error as AxiosError;
     const toast = await toastController.create({
-      message: `Error en les credencials: ${error.response?.data?.message || 'Desconegut'}`,
+      message: `Error en les credencials: ${axiosError.message || 'Desconegut'}`,
       duration: 2000,
       color: 'danger',
     });
@@ -101,7 +101,7 @@ const login = async () => {
 
 .form-item {
   margin-bottom: 20px;
-  --background: var(--ion-color-step-100);
+  --background: var(--ion-background-color-step-100);
   --border-radius: 10px;
   --padding-start: 15px;
   --color: var(--ion-text-color);

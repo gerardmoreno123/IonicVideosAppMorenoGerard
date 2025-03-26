@@ -29,43 +29,43 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/videos/manage',
-    component: () => import('@/views/VideosManagerCRUD/Index.vue')
+    component: () => import('@/views/VideosManagerCRUD/IndexPage.vue')
   },
   {
     path: '/videos/manage/show/:id',
-    component: () => import('@/views/VideosManagerCRUD/Show.vue')
+    component: () => import('@/views/VideosManagerCRUD/ShowPage.vue')
   },
   {
     path: '/videos/manage/create',
-    component: () => import('@/views/VideosManagerCRUD/Create.vue')
+    component: () => import('@/views/VideosManagerCRUD/CreatePage.vue')
   },
   {
     path: '/videos/manage/edit/:id',
-    component: () => import('@/views/VideosManagerCRUD/Edit.vue')
+    component: () => import('@/views/VideosManagerCRUD/EditPage.vue')
   },
   {
     path: '/videos/manage/delete/:id',
-    component: () => import('@/views/VideosManagerCRUD/Delete.vue')
+    component: () => import('@/views/VideosManagerCRUD/DeletePage.vue')
   },
   {
     path: '/multimedia/manage',
-    component: () => import('@/views/MultimediaManagerCRUD/Index.vue')
+    component: () => import('@/views/MultimediaManagerCRUD/IndexPage.vue')
   },
   {
     path: '/multimedia/manage/show/:id',
-    component: () => import('@/views/MultimediaManagerCRUD/Show.vue')
+    component: () => import('@/views/MultimediaManagerCRUD/ShowPage.vue')
   },
   {
     path: '/multimedia/manage/create',
-    component: () => import('@/views/MultimediaManagerCRUD/Create.vue')
+    component: () => import('@/views/MultimediaManagerCRUD/CreatePage.vue')
   },
   {
     path: '/multimedia/manage/edit/:id',
-    component: () => import('@/views/MultimediaManagerCRUD/Edit.vue')
+    component: () => import('@/views/MultimediaManagerCRUD/EditPage.vue')
   },
   {
     path: '/multimedia/manage/delete/:id',
-    component: () => import('@/views/MultimediaManagerCRUD/Delete.vue')
+    component: () => import('@/views/MultimediaManagerCRUD/DeletePage.vue')
   }
 ]
 

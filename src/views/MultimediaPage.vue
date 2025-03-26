@@ -53,11 +53,13 @@ import {
   toastController,
 } from '@ionic/vue';
 import api from '@/services/api';
+import { AxiosError} from "axios";
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { Multimedia } from '@/types/interfaces'; // Importa la interfaz
 
 const route = useRoute();
-const multimedia = ref(null);
+const multimedia = ref<Multimedia | null>(null);
 
 // Compute the full URL dynamically
 const mediaUrl = computed(() => {
@@ -71,9 +73,10 @@ const fetchMultimedia = async () => {
     const response = await api.get(`/multimedia/${route.params.id}`);
     multimedia.value = response.data.data;
   } catch (error) {
-    console.error('Error carregant el multimèdia:', error);
+    const axiosError = error as AxiosError;
+    console.error('Error carregant el multimèdia:', axiosError);
     const toast = await toastController.create({
-      message: `Error carregant el multimèdia: ${error.response?.data?.message || 'Desconegut'}`,
+      message: `Error carregant el multimèdia: ${axiosError.message || 'Desconegut'}`,
       duration: 2000,
       color: 'danger',
     });
@@ -86,13 +89,12 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('ca-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-const handleMediaError = (event) => {
+const handleMediaError = (event: Event) => {
   console.error('Media failed to load:', {
-    src: event.target.src,
-    error: event.target.error || 'Unknown error',
+    src: (event.target as HTMLMediaElement).src,
+    error: (event.target as HTMLMediaElement).error || 'Unknown error',
   });
 };
-
 onMounted(() => {
   fetchMultimedia();
 });
@@ -138,14 +140,14 @@ onMounted(() => {
 
 .multimedia-details {
   padding: 20px;
-  background: var(--ion-color-step-100);
+  background: var(--ion-background-color-step-100);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: background 0.3s ease;
 }
 
 .multimedia-container:hover .multimedia-details {
-  background: var(--ion-color-step-150);
+  background: var(--ion-background-color-step-150);
 }
 
 .multimedia-details h1 {

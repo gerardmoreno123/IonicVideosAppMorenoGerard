@@ -66,7 +66,7 @@
                   :key="item.id"
                   class="multimedia-card"
                   :style="{ animationDelay: `${index * 0.1}s` }"
-                  @click="$router.push(`/multimedia/manage/show/${item.id}`)"
+                  @click="$router.push(`/multimedia/${item.id}`)"
               >
                 <div class="multimedia-thumbnail">
                   <img
@@ -119,11 +119,11 @@ import {
 } from '@ionic/vue';
 import { playCircle } from 'ionicons/icons';
 import api from '@/services/api';
+import { AxiosError } from "axios";
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { User } from '@/types/interfaces';
 
-const router = useRouter();
-const user = ref(null);
+const user = ref<User | null>(null);
 const loading = ref(true);
 const activeTab = ref('videos'); // Tab actiu per defecte
 
@@ -132,9 +132,10 @@ const fetchProfile = async () => {
     const response = await api.get('/profile');
     user.value = response.data.data;
   } catch (error) {
-    console.error('Error carregant el perfil:', error);
+    const axiosError = error as AxiosError;
+    console.error('Error carregant el perfil:', axiosError);
     const toast = await toastController.create({
-      message: `Error carregant el perfil: ${error.response?.data?.message || 'Desconegut'}`,
+      message: `Error carregant el perfil: ${axiosError?.message || 'Desconegut'}`,
       duration: 2000,
       color: 'danger',
     });

@@ -49,6 +49,7 @@
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonItem, IonLabel, IonInput, IonButton, IonIcon } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api';
+import { AxiosError } from "axios";
 import { ref, computed } from 'vue';
 import { useAuth } from '@/stores/auth';
 import { toastController } from '@ionic/vue';
@@ -67,7 +68,6 @@ const passwordConfirmError = ref(false);
 const router = useRouter();
 const { login: authLogin } = useAuth();
 
-// Validaciones en tiempo real
 const validateName = () => {
   nameError.value = name.value.trim().length < 2;
 };
@@ -77,13 +77,12 @@ const validateEmail = () => {
 };
 const validatePassword = () => {
   passwordError.value = password.value.length < 6;
-  validatePasswordConfirm(); // Revalidar confirmación si cambia la contraseña
+  validatePasswordConfirm();
 };
 const validatePasswordConfirm = () => {
   passwordConfirmError.value = password.value !== password_confirmation.value || password_confirmation.value.length < 6;
 };
 
-// Estado del formulario
 const formInvalid = computed(() => {
   return nameError.value || emailError.value || passwordError.value || passwordConfirmError.value ||
       !name.value || !email.value || !password.value || !password_confirmation.value;
@@ -109,8 +108,9 @@ const register = async () => {
     await toast.present();
     await router.push('/');
   } catch (error) {
+    const axiosError = error as AxiosError;
     const toast = await toastController.create({
-      message: `Error en el registre: ${error.response?.data?.message || 'Desconegut'}`,
+      message: `Error en el registre: ${axiosError.message || 'Desconegut'}`,
       duration: 2000,
       color: 'danger',
     });
@@ -132,7 +132,7 @@ const register = async () => {
 
 .form-item {
   margin-bottom: 20px;
-  --background: var(--ion-color-step-100);
+  --background: var(--ion-background-color-step-100);
   --border-radius: 10px;
   --padding-start: 15px;
   --color: var(--ion-text-color);

@@ -70,19 +70,21 @@ import {
 } from '@ionic/vue';
 import { playCircle } from 'ionicons/icons';
 import api from '@/services/api';
+import { AxiosError } from "axios";
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { Video, Multimedia, MediaItem } from '@/types/interfaces';
 
 const router = useRouter();
-const videos = ref([]);
-const multimedia = ref([]);
+const videos = ref<Video[]>([]);
+const multimedia = ref<Multimedia[]>([]);
 const loading = ref(true);
 
 // Combina i barreja els ítems
-const shuffledItems = computed(() => {
+const shuffledItems = computed<MediaItem[]>(() => {
   const allItems = [
-    ...videos.value.map(video => ({ ...video, type: 'video' })),
-    ...multimedia.value.map(item => ({ ...item, type: 'multimedia' })),
+    ...videos.value.map(video => ({ ...video, type: 'video' } as MediaItem)),
+    ...multimedia.value.map(item => ({ ...item, type: 'multimedia' } as MediaItem)),
   ];
   return shuffleArray(allItems);
 });
@@ -95,12 +97,11 @@ const fetchContent = async () => {
     ]);
     videos.value = videosResponse.data.data;
     multimedia.value = multimediaResponse.data.data;
-    console.log('Videos carregats:', videos.value);
-    console.log('Multimèdia carregats:', multimedia.value);
   } catch (error) {
-    console.error('Error carregant el contingut:', error);
+    const axiosError = error as AxiosError;
+    console.error('Error carregant el contingut:', axiosError);
     const toast = await toastController.create({
-      message: `Error carregant el contingut: ${error.response?.data?.message || 'Desconegut'}`,
+      message: `Error carregant el contingut: ${axiosError.message || 'Desconegut'}`,
       duration: 2000,
       color: 'danger',
     });
@@ -110,7 +111,7 @@ const fetchContent = async () => {
   }
 };
 
-const shuffleArray = (array) => {
+const shuffleArray = (array: MediaItem[]): MediaItem[] => {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -124,17 +125,17 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('ca-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-const getThumbnailUrl = (url: string) => {
+const getThumbnailUrl = (url: string = '') => {
   const videoId = url.split('/embed/')[1]?.split('?')[0];
   return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://via.placeholder.com/480x360';
 };
 
-const getMultimediaUrl = (filePath: string) => {
+const getMultimediaUrl = (filePath: string = '') => {
   const baseUrl = 'http://localhost:8000'; // Ajusta segons el teu domini
   return `${baseUrl}/storage/${filePath}`;
 };
 
-const navigateToItem = (item) => {
+const navigateToItem = (item: MediaItem) => {
   if (item.type === 'video') {
     router.push(`/video/${item.id}`);
   } else if (item.type === 'multimedia') {
@@ -208,7 +209,7 @@ onMounted(() => {
 }
 
 .media-card:hover .media-info {
-  background: var(--ion-color-step-100);
+  background: var(--ion-background-color-step-100);
 }
 
 .media-info h2 {

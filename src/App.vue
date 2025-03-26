@@ -96,7 +96,8 @@ import {
   IonMenuToggle,
   IonNote,
   IonRouterOutlet,
-  IonSplitPane, toastController,
+  IonSplitPane,
+  toastController,
 } from '@ionic/vue';
 import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -110,10 +111,15 @@ import {
   personOutline,
   personSharp,
   logOutOutline,
-  logOutSharp, logoGithub, videocamSharp, fileTrayFullSharp,
+  logOutSharp,
+  logoGithub,
+  videocamSharp,
+  fileTrayFullSharp,
 } from 'ionicons/icons';
 import { useAuth } from '@/stores/auth';
 import api from '@/services/api';
+import { AxiosError } from 'axios';
+import { AuthPage } from '@/types/interfaces';
 
 const router = useRouter();
 const { isLoggedIn, logout } = useAuth();
@@ -131,9 +137,10 @@ const fetchUserProfile = async () => {
       const response = await api.get('/profile');
       user.value = response.data.data;
     } catch (error) {
-      console.error('Error carregant el perfil:', error);
+      const axiosError = error as AxiosError;
+      console.error('Error carregant el perfil:', axiosError);
       const toast = await toastController.create({
-        message: `Error carregant el perfil: ${error.response?.data?.message || 'Desconegut'}`,
+        message: `Error carregant el perfil: ${axiosError.message || 'Desconegut'}`,
         duration: 2000,
         color: 'danger',
       });
@@ -153,14 +160,20 @@ function logout_action() {
   };
 }
 
-const notLoggedInPages = [
+const notLoggedInPages: AuthPage[] = [
   { title: 'Login', url: '/auth/login', iosIcon: keyOutline, mdIcon: keySharp },
   { title: 'Register', url: '/auth/register', iosIcon: personAddOutline, mdIcon: personAddSharp },
 ];
 
-const loggedInPages = [
+const loggedInPages: AuthPage[] = [
   { title: 'Perfil', url: '/profile', iosIcon: personOutline, mdIcon: personSharp },
-  { title: 'Logout', url: '', iosIcon: logOutOutline, mdIcon: logOutSharp, action: logout_action() },
+  {
+    title: 'Logout',
+    url: '',
+    iosIcon: logOutOutline,
+    mdIcon: logOutSharp,
+    action: logout_action()
+  },
 ];
 
 const crudPages = [
@@ -168,11 +181,11 @@ const crudPages = [
   { title: 'Multimedia Manager', url: '/multimedia/manage', iosIcon: fileTrayFullSharp, mdIcon: fileTrayFullSharp },
 ];
 
-const currentAuthPages = computed(() => (isLoggedIn.value ? loggedInPages : notLoggedInPages));
+const currentAuthPages = computed<AuthPage[]>(() => (isLoggedIn.value ? loggedInPages : notLoggedInPages));
 const currentCrudPages = computed(() => (isLoggedIn.value ? crudPages : []));
 
 const appPages = [
-  { title: 'Explora', url: '/', iosIcon: homeOutline, mdIcon: homeSharp },
+  { title: 'Explora ', url: '/', iosIcon: homeOutline, mdIcon: homeSharp },
 ];
 </script>
 
