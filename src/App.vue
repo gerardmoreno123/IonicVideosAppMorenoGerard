@@ -128,7 +128,7 @@ const { isLoggedIn, logout } = useAuth();
 const user = ref({
   name: '',
   email: '',
-  profile_photo_url: 'https://via.placeholder.com/50', // Placeholder inicial
+  profile_photo_url: '',
 });
 
 const fetchUserProfile = async () => {
